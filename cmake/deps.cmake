@@ -1,0 +1,20 @@
+# gh_source(<out-var> <name> <url> <sha256> <folder-in-archive>)
+# Downloads an archive once into build/_src (shared by the Mac and the Windows build), checks
+# its hash and unpacks it. Sets <out-var> to the unpacked folder.
+set(GH_SRC_DIR "${CMAKE_SOURCE_DIR}/build/_src" CACHE PATH "Where third-party sources are unpacked")
+
+function(gh_source out name url sha256 folder)
+  set(dir "${GH_SRC_DIR}/${folder}")
+  if(NOT EXISTS "${dir}/.complete")
+    set(archive "${GH_SRC_DIR}/${name}.tar.gz")
+    message(STATUS "Fetching ${name}")
+    file(DOWNLOAD "${url}" "${archive}" EXPECTED_HASH SHA256=${sha256} TLS_VERIFY ON STATUS status)
+    list(GET status 0 code)
+    if(NOT code EQUAL 0)
+      message(FATAL_ERROR "Could not download ${url}: ${status}")
+    endif()
+    file(ARCHIVE_EXTRACT INPUT "${archive}" DESTINATION "${GH_SRC_DIR}")
+    file(WRITE "${dir}/.complete" "${sha256}\n")
+  endif()
+  set(${out} "${dir}" PARENT_SCOPE)
+endfunction()
