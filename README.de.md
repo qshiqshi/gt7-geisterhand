@@ -49,8 +49,21 @@ Lenkwinkel im Sport-Modus weg.)
 
 ## Start
 
-Fertige Downloads gibt es noch nicht. Bis dahin baust du das Programm selbst – das ist ein
-Befehl, siehe [Bauen](#bauen).
+**Windows 10 oder 11: das Programm als ZIP.** Lade
+[Geisterhand-windows-x64.zip](https://github.com/qshiqshi/gt7-geisterhand/releases/latest/download/Geisterhand-windows-x64.zip),
+entpacke es und starte `Geisterhand.exe` im Ordner. Es ist nicht signiert: Windows fragt beim
+ersten Start nach (**Weitere Informationen** → **Trotzdem ausführen**).
+
+**Mac (Apple Silicon oder Intel, gebaut für macOS 11 und neuer): die App.** Lade
+[Geisterhand-mac.zip](https://github.com/qshiqshi/gt7-geisterhand/releases/latest/download/Geisterhand-mac.zip),
+entpacke es per Doppelklick und zieh `Geisterhand` nach „Programme“. Die App ist noch nicht
+von Apple beglaubigt, deshalb verweigert macOS den ersten Start: Öffne **Systemeinstellungen →
+Datenschutz & Sicherheit**, scroll nach unten zu „Geisterhand“ und klick auf **Dennoch
+öffnen**. (Bis macOS 14: Rechtsklick auf die App → **Öffnen**.)
+
+**Oder bau es selbst** – ein Befehl, siehe [Bauen](#bauen).
+
+Danach:
 
 1. **Steck das Lenkrad an den Rechner.** Unter Windows installierst du vorher den Treiber des
    Herstellers (Logitech G HUB, den Thrustmaster- oder den Fanatec-Treiber) und stellst das

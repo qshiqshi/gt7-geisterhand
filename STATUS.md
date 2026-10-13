@@ -3,6 +3,11 @@
 Version 0.1.0 · 14.10.2026 · Einstieg für die Weiterarbeit. Die Anleitung für Nutzer steht in
 [README.de.md](README.de.md) / [README.md](README.md).
 
+Öffentlich seit dem 14.10.2026: <https://github.com/qshiqshi/gt7-geisterhand>, Release v0.1.0 mit
+`Geisterhand-mac.zip` und `Geisterhand-windows-x64.zip` (`./build.sh release` baut beide samt
+Prüfsummen nach `dist/release/`). Die Anleitung verweist auf `releases/latest/download/…` –
+die Dateinamen müssen bei jedem Release gleich bleiben.
+
 ## Was es ist
 
 Ein Fenster für Mac und Windows: empfängt den Lenkwinkel aus den Fahrdaten von Gran Turismo 7
@@ -43,7 +48,8 @@ Für den ersten Lauf am RS50: Kraft auf 10–15 %, Hände weg, Leertaste bereith
 - Der Drehbereich wird von Hand eingetragen; ausgelesen wird er nicht.
 - Von den Fahrdaten wird nur der Lenkwinkel benutzt: keine Schaltlichter, keine
   Randstein-Vibration, keine nachgerechneten Lenkkräfte.
-- Beide Programme sind unsigniert (Mac: nur für diesen Rechner signiert).
+- Beide Programme sind unsigniert. Die Mac-App trägt keine Developer-ID und ist nicht von Apple
+  beglaubigt; macOS verlangt deshalb beim ersten Start „Dennoch öffnen“.
 
 ## Bauen und prüfen
 

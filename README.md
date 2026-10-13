@@ -47,8 +47,21 @@ out in Sport mode.)
 
 ## Start
 
-There are no downloads yet. Until there are, build the program yourself – it is one command,
-see [Build](#build).
+**Windows 10 or 11: the program as a ZIP.** Download
+[Geisterhand-windows-x64.zip](https://github.com/qshiqshi/gt7-geisterhand/releases/latest/download/Geisterhand-windows-x64.zip),
+unpack it and start `Geisterhand.exe` in the folder. It is not signed: Windows asks on the
+first start (**More info** → **Run anyway**).
+
+**Mac (Apple silicon or Intel, built for macOS 11 and newer): the app.** Download
+[Geisterhand-mac.zip](https://github.com/qshiqshi/gt7-geisterhand/releases/latest/download/Geisterhand-mac.zip),
+unpack it with a double-click and move `Geisterhand` to "Applications". The app is not
+notarised by Apple yet, so macOS refuses the first start: open **System Settings → Privacy &
+Security**, scroll down to "Geisterhand" and click **Open Anyway**. (On macOS 14 and older:
+right-click the app → **Open**.)
+
+**Or build it yourself** – one command, see [Build](#build).
+
+Then:
 
 1. **Plug the wheel into the computer.** On Windows install the maker's driver first (Logitech
    G HUB, the Thrustmaster or the Fanatec driver) and set the wheel to its PC mode if it has
