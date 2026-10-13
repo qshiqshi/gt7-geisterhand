@@ -46,6 +46,8 @@ struct Args {
     bool autostart = false;  // press "start" as soon as it is possible
     std::string shot;        // --shot file.png: save the window's picture ...
     double shotAfter = 3;    // ... this many seconds after launch
+    std::string record;      // --record folder: save the window 20 times a second, from --shot-after on ...
+    double recordSeconds = 6;  // ... for this long (pictures for the manual)
     double quitAfter = 0;
     std::string lang;
 };
@@ -67,6 +69,8 @@ Args parseArgs(int argc, char** argv) {
         else if (arg == "--autostart") a.autostart = true;
         else if (arg == "--shot") a.shot = value();
         else if (arg == "--shot-after") a.shotAfter = std::atof(value().c_str());
+        else if (arg == "--record") a.record = value();
+        else if (arg == "--record-seconds") a.recordSeconds = std::atof(value().c_str());
         else if (arg == "--quit-after") a.quitAfter = std::atof(value().c_str());
         else if (arg == "--lang") a.lang = value();
     }
@@ -163,6 +167,21 @@ void drawWheel(ImDrawList* dl, ImVec2 c, float r, double degrees, ImU32 color, f
     else dl->AddCircle(c, hub, color, 48, spoke * 0.6f);
     const ImVec2 up(std::sin(turn), -std::cos(turn));
     dl->AddLine(c + up * (r - rim), c + up * (r + rim), mark, rim * 0.8f);  // the stripe at twelve o'clock
+}
+
+// The replay's wheel: a thin ring just outside the real rim with a dot at twelve o'clock, so
+// that it stays visible when the real wheel is exactly where the replay has it.
+void drawGhost(ImDrawList* dl, ImVec2 c, float r, float outside, double degrees, ImU32 color, float line, float dot) {
+    const float turn = float(degrees) * kPi / 180.0f;
+    const float ring = r + outside;
+    dl->AddCircle(c, ring, color, 96, line);
+    const float spokes[3] = {-kPi / 2, kPi / 2, kPi};
+    for (float at : spokes) {
+        const ImVec2 dir(std::sin(turn + at), -std::cos(turn + at));
+        dl->AddLine(c + dir * (r * 0.25f), c + dir * ring, color, line);
+    }
+    const ImVec2 up(std::sin(turn), -std::cos(turn));
+    dl->AddCircleFilled(c + up * ring, dot, color, 24);
 }
 
 std::string degreesText(double value) {
@@ -277,9 +296,16 @@ int main(int argc, char** argv) {
         return 1;
     }
     SDL_hid_init();
+    // The engine reads the wheel itself, many times a second. Nobody needs each movement as
+    // an event; plugging in and out still arrives.
+    for (Uint32 type : {SDL_EVENT_JOYSTICK_AXIS_MOTION, SDL_EVENT_JOYSTICK_BALL_MOTION, SDL_EVENT_JOYSTICK_HAT_MOTION,
+                        SDL_EVENT_JOYSTICK_BUTTON_DOWN, SDL_EVENT_JOYSTICK_BUTTON_UP}) {
+        SDL_SetEventEnabled(type, false);
+    }
+    SDL_SetGamepadEventsEnabled(false);
 
     // A run with test options starts from the defaults and leaves the user's settings alone.
-    const bool testing = args.demo || !args.address.empty() || !args.wheel.empty() || !args.shot.empty() || args.autostart ||
+    const bool testing = args.demo || !args.address.empty() || !args.wheel.empty() || !args.shot.empty() || !args.record.empty() || args.autostart ||
                          args.quitAfter > 0 || args.receivePort != 33740 || args.sendPort != 33739;
     Settings settings = testing ? Settings{} : loadSettings();
     if (!args.address.empty()) settings.address = args.address;
@@ -325,8 +351,8 @@ int main(int argc, char** argv) {
         std::vector<WheelInfo> wheels;
         std::optional<WheelInfo> active;
         bool relist = true, advanced = false, shown = false, shotTaken = false, running = true;
-        double lastList = -10, lastSave = 0;
-        int frames = 0;
+        double lastList = -10, lastSave = 0, lastRecorded = -1;
+        int frames = 0, recorded = 0;
         char address[64];
         SDL_strlcpy(address, settings.address.c_str(), sizeof address);
 
@@ -343,6 +369,7 @@ int main(int argc, char** argv) {
                 continue;
             }
             const double now = monotonicSeconds();
+            SDL_UpdateJoysticks();  // notices wheels being plugged in and out
 
             // ---- devices: keep the list fresh, keep the choice across replugging ----------
             if (relist || now - lastList > 2.0) {
@@ -486,13 +513,13 @@ int main(int argc, char** argv) {
 
             // dial: the replay as a ghost, the real wheel in front of it
             {
-                const float size = ui.px(196);
+                const float size = ui.px(212);
                 ImGui::Dummy(ImVec2(ImGui::GetContentRegionAvail().x, size + ui.px(18)));
                 const ImVec2 lo = ImGui::GetItemRectMin(), hi = ImGui::GetItemRectMax();
                 const ImVec2 c((lo.x + hi.x) * 0.5f, (lo.y + hi.y) * 0.5f);
-                const float r = size * 0.5f - ui.px(10);
+                const float r = size * 0.5f - ui.px(22);
                 const bool haveWheel = view.state != EngineView::State::NoWheel;
-                if (view.haveTarget) drawWheel(dl, c, r, view.targetDeg, col(kGhost, 0.85f), ui.px(2), ui.px(2), col(kGhost), false);
+                if (view.haveTarget) drawGhost(dl, c, r, ui.px(13), view.targetDeg, col(kGhost, 0.9f), ui.px(2), ui.px(5));
                 drawWheel(dl, c, r, haveWheel ? view.wheelDeg : 0.0, col(kText, haveWheel ? 0.92f : 0.25f), ui.px(9), ui.px(7),
                           col(engaged ? kGo : kStop, haveWheel ? 1.0f : 0.3f), true);
 
@@ -589,6 +616,9 @@ int main(int argc, char** argv) {
                 } else if (view.lastStop == EngineView::Stop::WheelLost) {
                     text = ui.t(Tx::StopWheelLost);
                     color = kWarn;
+                } else if (view.lastStop == EngineView::Stop::NoData) {
+                    text = ui.t(Tx::StopNoData);
+                    color = kWarn;
                 } else if (view.lastStop == EngineView::Stop::Driver) {
                     text = std::string(ui.t(Tx::StopDriver)) + (view.detail.empty() ? "." : ": " + view.detail);
                     color = kStop;
@@ -601,7 +631,7 @@ int main(int argc, char** argv) {
                     text = ui.t(why);
                     color = kStop;
                 } else if (!view.canTurn) {
-                    text = ui.t(Tx::HintNeedWheel);
+                    text = ui.t(wheels.size() <= 1 ? Tx::HintPlugIn : Tx::HintNeedWheel);
                 } else if (!dataReady) {
                     text = ui.t(Tx::HintNeedData);
                 } else {
@@ -632,6 +662,15 @@ int main(int argc, char** argv) {
                     SDL_DestroySurface(picture);
                 }
                 shotTaken = true;
+            }
+            if (!args.record.empty() && now >= args.shotAfter && now < args.shotAfter + args.recordSeconds && now - lastRecorded >= 0.05) {
+                if (SDL_Surface* picture = SDL_RenderReadPixels(renderer, nullptr)) {
+                    char name[32];
+                    std::snprintf(name, sizeof name, "/frame_%04d.png", recorded++);
+                    SDL_SavePNG(picture, (args.record + name).c_str());
+                    SDL_DestroySurface(picture);
+                }
+                lastRecorded = lastRecorded < 0 ? now : lastRecorded + 0.05;
             }
             SDL_RenderPresent(renderer);
 

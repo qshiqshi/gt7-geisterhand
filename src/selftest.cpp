@@ -365,6 +365,26 @@ void testControl(const Signal& target, const char* source, bool harsh) {
         std::printf("        (%.1f Nm: fault %d after %.2f s at %.0f deg/s)\n", nm, int(r.fault), r.faultAt, r.speedAtFault);
         check(r.fault == Fault::Runaway || r.fault == Fault::TooFast, "a loop that starts the wrong way round is stopped");
     }
+    {   // the wheel is still turning when the start is pressed: the probe has to wait
+        for (int polarity : {1, -1}) {
+            Controller c;
+            SimPlant plant = directDrive(8);
+            plant.polarity = polarity;
+            plant.viscous = 0.05;
+            plant.placeAt(0);
+            plant.velocity = 300.0 * kSimPi / 180.0 * -polarity;   // against what a positive force would do
+            double t = 0;
+            c.start(t, plant.readDeg());
+            ControlParams params;
+            while (t < 12 && c.phase() == Phase::Probe) {
+                t += 1.0 / 250;
+                plant.advance(1.0 / 250);
+                ControlInput in{t, plant.readDeg(), true, 0.0};
+                plant.command(c.step(in, params));
+            }
+            check(c.phase() == Phase::Run && c.polarity() == polarity, "a wheel that still turns at the start is not mistaken for an answer");
+        }
+    }
     {   // the data stops for a while
         Scenario s;
         s.plant = directDrive(8);

@@ -65,11 +65,12 @@ def main() -> None:
     parser.add_argument("--seconds", type=float, default=30)
     parser.add_argument("--recording", type=Path)
     parser.add_argument("--burst", type=float, default=0, help="hold packets back for up to this many ms")
+    parser.add_argument("--bind", default="127.0.0.1", help="0.0.0.0 to be reachable from another machine")
     args = parser.parse_args()
 
     packets = recorded(args.recording) if args.recording else None
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as console:
-        console.bind(("127.0.0.1", args.port))
+        console.bind((args.bind, args.port))
         print("waiting for a heartbeat …", flush=True)
         wanted, program = console.recvfrom(16)
         size = SIZES.get(wanted[:1], 296)

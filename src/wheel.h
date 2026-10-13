@@ -26,13 +26,20 @@ struct WheelInfo {
 // What is plugged in right now. Call from the main thread.
 std::vector<WheelInfo> listWheels();
 
+constexpr int kMaxAxes = 8;
+
+struct WheelReading {
+    double axes[kMaxAxes] = {};   // each -1..1; steering is usually the first, right positive
+    int axisCount = 0;
+    uint64_t buttons = 0;         // the buttons held down, one bit each
+};
+
 class Wheel {
 public:
     virtual ~Wheel() = default;
 
-    // Angle as -1..1 of the wheel's range (right positive) and the buttons held down.
-    // False when the device is gone.
-    virtual bool read(double& axis, uint64_t& buttons) = 0;
+    // What the device reports right now. False when it is gone.
+    virtual bool read(WheelReading& out) = 0;
 
     // Take hold of the motor. Nothing moves before this, nothing after disengage().
     virtual bool engage(std::string& error) = 0;

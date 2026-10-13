@@ -54,7 +54,7 @@ public:
     void forgetWheel();
 
 private:
-    double stepProbe(const ControlInput& in, const ControlParams& p);
+    double stepProbe(const ControlInput& in, const ControlParams& p, double dt);
     double stepRun(const ControlInput& in, const ControlParams& p, double dt);
     void enterRun(const ControlInput& in);
     void fail(Fault f);
@@ -71,6 +71,9 @@ private:
     double wheelVel_ = 0;
 
     // probe
+    bool atRest_ = false;
+    double restT_ = 0;
+    double restWaitT_ = 0;
     int probeDir_ = 1;
     double probeStageT_ = 0;
     double probeStartDeg_ = 0;

@@ -10,6 +10,9 @@ constexpr double kTauRefVel = 0.020;    // smoothing of the reference speed
 
 // Probe: a slowly rising push until the wheel answers. It tells which way a positive force
 // turns this wheel, and it proves that force feedback works at all before the loop closes.
+constexpr double kRestVelDegS = 20;     // the probe waits until the wheel is this still ...
+constexpr double kRestS = 0.2;          // ... for this long,
+constexpr double kRestTimeoutS = 4.0;   // and gives up when it never comes to rest
 constexpr double kProbeMoveDeg = 1.0;
 constexpr double kProbeMaxForce = 0.30;
 constexpr double kProbeRampS = 1.2;
@@ -52,6 +55,9 @@ double clamp(double v, double lo, double hi) { return v < lo ? lo : v > hi ? hi 
 void Controller::start(double t, double wheelDeg) {
     phase_ = Phase::Probe;
     fault_ = Fault::None;
+    atRest_ = false;
+    restT_ = 0;
+    restWaitT_ = 0;
     probeDir_ = 1;
     probeStageT_ = t;
     probeStartDeg_ = wheelDeg;
@@ -89,7 +95,7 @@ double Controller::step(const ControlInput& in, const ControlParams& p) {
 
     switch (phase_) {
     case Phase::Probe:
-        return stepProbe(in, p);
+        return stepProbe(in, p, dt);
     case Phase::Run:
         return stepRun(in, p, dt);
     default:
@@ -97,7 +103,21 @@ double Controller::step(const ControlInput& in, const ControlParams& p) {
     }
 }
 
-double Controller::stepProbe(const ControlInput& in, const ControlParams& p) {
+double Controller::stepProbe(const ControlInput& in, const ControlParams& p, double dt) {
+    // A wheel that is still turning - from a hand, or from the last run - would be mistaken
+    // for an answer to the push. Wait until it stands still.
+    if (!atRest_) {
+        restWaitT_ += dt;
+        restT_ = std::fabs(wheelVel_) < kRestVelDegS ? restT_ + dt : 0;
+        if (restT_ >= kRestS) {
+            atRest_ = true;
+            probeStageT_ = in.t;
+            probeStartDeg_ = in.wheelDeg;
+        } else if (restWaitT_ > kRestTimeoutS) {
+            fail(Fault::Runaway);
+        }
+        return 0;
+    }
     const double moved = in.wheelDeg - probeStartDeg_;
     if (std::fabs(moved) >= kProbeMoveDeg) {
         polarity_ = ((moved > 0) == (probeDir_ > 0)) ? 1 : -1;

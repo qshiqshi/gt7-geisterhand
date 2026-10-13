@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 250" width="920" height="250" role="img" aria-label="The PlayStation sends the steering angle over the home network to a PC or Mac, which turns the wheel over USB.">
+  <rect width="920" height="250" rx="18" fill="#0E0F12"/>
+  <g font-family="-apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif" text-anchor="middle">
+    <!-- PlayStation -->
+    <rect x="52" y="44" width="216" height="162" rx="14" fill="#17191E"/>
+    <rect x="118" y="74" width="84" height="20" rx="6" fill="none" stroke="#ECEEF2" stroke-width="5"/>
+    <path d="M132 108h56" stroke="#ECEEF2" stroke-width="5" stroke-linecap="round"/>
+    <text x="160" y="150" font-size="19" font-weight="600" fill="#ECEEF2">PlayStation</text>
+    <text x="160" y="176" font-size="14.5" fill="#8A8F9A">GT7 plays a replay</text>
+
+    <!-- computer -->
+    <rect x="352" y="44" width="216" height="162" rx="14" fill="#17191E"/>
+    <rect x="422" y="68" width="76" height="46" rx="6" fill="none" stroke="#ECEEF2" stroke-width="5"/>
+    <path d="M444 124h32" stroke="#ECEEF2" stroke-width="5" stroke-linecap="round"/>
+    <text x="460" y="150" font-size="19" font-weight="600" fill="#ECEEF2">PC or Mac</text>
+    <text x="460" y="176" font-size="14.5" fill="#8A8F9A">Geisterhand</text>
+
+    <!-- wheel -->
+    <rect x="652" y="44" width="216" height="162" rx="14" fill="#17191E"/>
+    <g transform="rotate(32 760 92)" fill="none" stroke="#7CE7F5" stroke-width="2">
+      <circle cx="760" cy="92" r="31"/>
+      <circle cx="760" cy="61" r="3.5" fill="#7CE7F5" stroke="none"/>
+    </g>
+    <g fill="none" stroke="#ECEEF2" stroke-width="6" stroke-linecap="round">
+      <circle cx="760" cy="92" r="24"/>
+      <path d="M766 92h18M754 92h-18M760 98v18"/>
+    </g>
+    <circle cx="760" cy="92" r="6.5" fill="#ECEEF2"/>
+    <path d="M760 65v6" stroke="#FF5A5F" stroke-width="5"/>
+    <text x="760" y="150" font-size="19" font-weight="600" fill="#ECEEF2">Your wheel</text>
+    <text x="760" y="176" font-size="14.5" fill="#8A8F9A">turns along</text>
+
+    <!-- arrows -->
+    <g stroke="#7CE7F5" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M282 118h56M328 109l10 9-10 9"/>
+      <path d="M582 118h56M628 109l10 9-10 9"/>
+    </g>
+    <text x="310" y="98" font-size="13.5" fill="#7CE7F5">home network</text>
+    <text x="310" y="146" font-size="12.5" fill="#8A8F9A">steering angle</text>
+    <text x="610" y="98" font-size="13.5" fill="#7CE7F5">USB</text>
+    <text x="610" y="146" font-size="12.5" fill="#8A8F9A">force</text>
+  </g>
+</svg>

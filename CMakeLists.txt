@@ -62,11 +62,22 @@ if(APPLE)
   add_executable(Geisterhand MACOSX_BUNDLE ${SOURCES} "${ICON}")
   set_target_properties(Geisterhand PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/packaging/Info.plist.in")
 elseif(WIN32)
-  add_executable(Geisterhand WIN32 ${SOURCES} packaging/windows.rc)
-  target_link_libraries(Geisterhand PRIVATE ws2_32 iphlpapi)
   if(MINGW)
-    target_link_options(Geisterhand PRIVATE -static)   # one file, no runtime DLLs next to it
+    # windres hands paths to a shell without quoting them, so a project folder with a space
+    # or an "&" in its name breaks it. Run it inside packaging/ with relative names instead.
+    set(RESOURCES "${CMAKE_BINARY_DIR}/windows-resources.o")
+    add_custom_command(OUTPUT "${RESOURCES}"
+      COMMAND "${CMAKE_RC_COMPILER}" -O coff -i windows.rc -o "${RESOURCES}"
+      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/packaging"
+      DEPENDS packaging/windows.rc assets/icon/Geisterhand.ico
+      VERBATIM)
+    set_source_files_properties("${RESOURCES}" PROPERTIES EXTERNAL_OBJECT TRUE GENERATED TRUE)
+    add_executable(Geisterhand WIN32 ${SOURCES} "${RESOURCES}")
+    target_link_options(Geisterhand PRIVATE -static -s)   # one file, no runtime DLLs next to it, no symbols
+  else()
+    add_executable(Geisterhand WIN32 ${SOURCES} packaging/windows.rc)
   endif()
+  target_link_libraries(Geisterhand PRIVATE ws2_32 iphlpapi)
 else()
   add_executable(Geisterhand ${SOURCES})
 endif()

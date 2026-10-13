@@ -23,7 +23,11 @@ bool isLogiDirectDrive(uint16_t vendor, uint16_t product) {
 // third one (vendor usage page 0xFFFD) that takes the torque.
 std::string findLogiForcePath(uint16_t product) {
     std::string path;
+    // SDL normally lists controllers only and would leave this interface out. Lift that for
+    // this one question about this one device.
+    SDL_SetHint(SDL_HINT_HIDAPI_ENUMERATE_ONLY_CONTROLLERS, "0");
     SDL_hid_device_info* list = SDL_hid_enumerate(kLogitech, product);
+    SDL_SetHint(SDL_HINT_HIDAPI_ENUMERATE_ONLY_CONTROLLERS, "1");
     for (SDL_hid_device_info* d = list; d; d = d->next) {
         if (d->usage_page == 0xFFFD || (d->usage_page == 0 && d->interface_number == 2)) {
             path = d->path;
@@ -64,16 +68,18 @@ public:
             return false;
         }
         buttons_ = std::min(64, SDL_GetNumJoystickButtons(joystick_));
+        axes_ = std::min(kMaxAxes, SDL_GetNumJoystickAxes(joystick_));
         return true;
     }
 
-    bool read(double& axis, uint64_t& buttons) override {
+    bool read(WheelReading& out) override {
         SDL_UpdateJoysticks();
         if (!SDL_JoystickConnected(joystick_)) return false;
-        axis = std::clamp(SDL_GetJoystickAxis(joystick_, 0) / 32767.0, -1.0, 1.0);  // steering is the first axis
-        buttons = 0;
+        out.axisCount = axes_;
+        for (int i = 0; i < axes_; ++i) out.axes[i] = std::clamp(SDL_GetJoystickAxis(joystick_, i) / 32767.0, -1.0, 1.0);
+        out.buttons = 0;
         for (int i = 0; i < buttons_; ++i) {
-            if (SDL_GetJoystickButton(joystick_, i)) buttons |= uint64_t(1) << i;
+            if (SDL_GetJoystickButton(joystick_, i)) out.buttons |= uint64_t(1) << i;
         }
         return true;
     }
@@ -81,6 +87,7 @@ public:
 protected:
     SDL_Joystick* joystick_ = nullptr;
     int buttons_ = 0;
+    int axes_ = 0;
 };
 
 // ---- force feedback through the operating system -----------------------------------------
@@ -232,12 +239,13 @@ public:
         plant_.stiction = 0.07;
     }
 
-    bool read(double& axis, uint64_t& buttons) override {
+    bool read(WheelReading& out) override {
         const double t = monotonicSeconds();
         if (last_ >= 0) plant_.advance(std::min(0.1, t - last_));
         last_ = t;
-        axis = plant_.readDeg() / (plant_.rangeDeg / 2);
-        buttons = 0;
+        out.axisCount = 1;
+        out.axes[0] = plant_.readDeg() / (plant_.rangeDeg / 2);
+        out.buttons = 0;
         return true;
     }
 

@@ -23,7 +23,7 @@ struct EngineSettings {
 
 struct EngineView {
     enum class State { NoWheel, Ready, Probing, Following, Waiting };
-    enum class Stop { None, User, Button, Fault, WheelLost, Driver };
+    enum class Stop { None, User, Button, Fault, WheelLost, Driver, NoData };
     State state = State::NoWheel;
     Stop lastStop = Stop::None;      // why the last run ended
     Fault lastFault = Fault::None;   // with Stop::Fault
