@@ -1,0 +1,8 @@
+# build output and downloaded dependencies
+/build/
+/dist/
+# local notes, VM helpers, test captures
+/local/
+.DS_Store
+__pycache__/
+*.pyc
