@@ -28,9 +28,11 @@ USB-HID) und Dear ImGui, fest eingebunden – je eine Datei ohne Laufzeit.
 
 Bisher hat das Programm kein echtes Lenkrad gedreht und keine echte PlayStation gehört.
 
-1. **RS50 am Mac (direkter Weg):** Erscheint es in der Liste mit „direkt“? Nimmt es die
-   Kraftpakete an (macOS schickt Ausgabeberichte ohne Treiber)? Antippen beim Start, dann
-   Mitlenken; fällt die Kraft bei Stopp, Taste und Abziehen weg? Stimmt der Drehbereich?
+1. **RS50 am Mac (direkter Weg):** Erscheint seit dem 14.10.2026 in der Liste mit „direkt“
+   (die Mac-App aus Release v0.1.0 sah es noch nicht, siehe Entscheidungen). Offen: Nimmt es
+   die Kraftpakete an (macOS schickt Ausgabeberichte ohne Treiber, G HUB läuft nebenher)?
+   Antippen beim Start, dann Mitlenken; fällt die Kraft bei Stopp, Taste und Abziehen weg?
+   Stimmt der Drehbereich?
 2. **Echte PlayStation:** Suche im Heimnetz, Paket „B“ während einer Wiederholung, Vorzeichen
    des Lenkwinkels (aus dem Mitschnitt: positiv = links), Winkelbereich bei Fahrten mit
    Lenkrad (der Mitschnitt stammt vom Controller und bleibt in ±180°).
@@ -61,7 +63,8 @@ dist/mac/Geisterhand.app/Contents/MacOS/Geisterhand --ps5 127.0.0.1 --send-port 
 ```
 
 Weitere Schalter für Tests und Bilder stehen am Anfang von `src/main.cpp` (`--shot`,
-`--record`, `--quit-after`, `--lang`). Ein Lauf mit Testschaltern rührt die gespeicherten
+`--record`, `--quit-after`, `--lang`). `--list-wheels` druckt, was die Geräteliste anbieten
+würde, und schickt nichts ans Lenkrad. Ein Lauf mit Testschaltern rührt die gespeicherten
 Einstellungen nicht an. Die Bilder der Anleitung entstehen mit `--demo --autostart --shot …`
 und `--record …` (Animation: ffmpeg, 460 px breit).
 
@@ -74,6 +77,9 @@ und `--record …` (Animation: ffmpeg, 460 px breit).
 - **Lageregelung nur mit Kraft:** Das Programm tippt das Lenkrad an und lernt die Kraftrichtung,
   tastet die Verstärkung je Lenkrad von unten heran und nimmt sie zurück, sobald es zittert.
   „Kraft“ begrenzt nur das Drehmoment und ändert die Regelung nicht.
+- **Gamecontroller-Dienst von macOS abgeschaltet** (`SDL_HINT_JOYSTICK_MFI = 0`): macOS
+  beansprucht das RS50 für seinen Gamecontroller-Dienst, und SDL überlässt solche Geräte einem
+  Weg, der nur Gamepads weiterreicht – ohne den Hinweis fehlte das Rad in der Liste.
 - **Eigener Thread für das Lenkrad:** Ein hängendes Fenster lässt keine Kraft stehen.
 - **Wiedergabe nach Paketnummer** mit kleinem Puffer statt nach Ankunftszeit, weil die Pakete
   im Heimnetz stoßweise kommen.

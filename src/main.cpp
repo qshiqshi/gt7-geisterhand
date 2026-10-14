@@ -43,6 +43,7 @@ struct Args {
     int receivePort = 33740;
     int sendPort = 33739;
     std::string wheel;       // --wheel key: choose this device
+    bool listWheels = false; // --list-wheels: print what the device list would offer, then quit
     bool autostart = false;  // press "start" as soon as it is possible
     std::string shot;        // --shot file.png: save the window's picture ...
     double shotAfter = 3;    // ... this many seconds after launch
@@ -66,6 +67,7 @@ Args parseArgs(int argc, char** argv) {
         else if (arg == "--receive-port") a.receivePort = std::atoi(value().c_str());
         else if (arg == "--send-port") a.sendPort = std::atoi(value().c_str());
         else if (arg == "--wheel") a.wheel = value();
+        else if (arg == "--list-wheels") a.listWheels = true;
         else if (arg == "--autostart") a.autostart = true;
         else if (arg == "--shot") a.shot = value();
         else if (arg == "--shot-after") a.shotAfter = std::atof(value().c_str());
@@ -290,12 +292,36 @@ int main(int argc, char** argv) {
     SDL_SetHint(SDL_HINT_JOYSTICK_WGI, "0");
     SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI, "0");
 #endif
+#ifdef __APPLE__
+    // macOS claims racing wheels such as the RS50 for its GameController framework, and SDL
+    // leaves everything that framework claims to a backend that only passes on gamepads: the
+    // wheel would never show up. Gamepads are of no use here anyway.
+    SDL_SetHint(SDL_HINT_JOYSTICK_MFI, "0");
+#endif
     SDL_SetAppMetadata("Geisterhand", GEISTERHAND_VERSION, "de.qshi.geisterhand");
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC)) {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Geisterhand", SDL_GetError(), nullptr);
         return 1;
     }
     SDL_hid_init();
+
+    if (args.listWheels) {
+        if (!args.report.empty() && !std::freopen(args.report.c_str(), "w", stdout)) return 2;
+        for (int i = 0; i < 50; ++i) {  // devices arrive during the first moments
+            SDL_PumpEvents();
+            SDL_UpdateJoysticks();
+            SDL_Delay(20);
+        }
+        for (const WheelInfo& w : listWheels()) {
+            const char* kind = w.kind == WheelInfo::Kind::Haptic       ? "system"
+                               : w.kind == WheelInfo::Kind::LogiDirect ? "direct"
+                               : w.kind == WheelInfo::Kind::Demo       ? "demo"
+                                                                       : "read-only";
+            std::printf("%-10s %-10s %s\n", w.key.c_str(), kind, w.name.c_str());
+        }
+        SDL_Quit();
+        return 0;
+    }
     // The engine reads the wheel itself, many times a second. Nobody needs each movement as
     // an event; plugging in and out still arrives.
     for (Uint32 type : {SDL_EVENT_JOYSTICK_AXIS_MOTION, SDL_EVENT_JOYSTICK_BALL_MOTION, SDL_EVENT_JOYSTICK_HAT_MOTION,
