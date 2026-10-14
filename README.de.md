@@ -11,11 +11,12 @@ aus der Bestenliste an und schau zu, was die Schnellsten am Lenkrad tun.
 
 *English version: [README.md](README.md)*
 
-> **Frühe Fassung – bisher hat sie noch kein echtes Lenkrad gedreht.** Geprüft ist das
-> Programm bislang gegen nachgebildete Lenkräder und eine nachgebaute Konsole, auf einem Mac
-> und in einer virtuellen Maschine mit Windows 11. Die ersten Läufe an echter Hardware stehen
-> noch aus; siehe [Was geprüft ist](#was-geprüft-ist). Ein Lenkrad mit Motor kann dich
-> verletzen: Lies zuerst [Sicherheit](#sicherheit) und fang mit wenig Kraft an.
+> **Frühe Fassung.** An echter Hardware lief sie bisher nur in einem Aufbau: ein Logitech
+> RS50 an einem Mac, das einer Wiederholung von der PS5 folgt. Alles andere ist gegen
+> nachgebildete Lenkräder und eine nachgebaute Konsole geprüft, auf einem Mac und in einer
+> virtuellen Maschine mit Windows 11; siehe [Was geprüft ist](#was-geprüft-ist). Ein Lenkrad
+> mit Motor kann dich verletzen: Lies zuerst [Sicherheit](#sicherheit) und fang mit wenig
+> Kraft an.
 
 > **Inoffiziell.** Dieses Projekt steht in keiner Verbindung zu Sony Interactive
 > Entertainment, Polyphony Digital oder einem Hersteller von Lenkrädern und wird von ihnen
@@ -92,9 +93,9 @@ Demo: eine erfundene Fahrt und ein nachgebildetes Lenkrad.
 ## Welche Lenkräder
 
 Ein Programm kann ein Lenkrad nur drehen, wenn der Rechner einen Weg zu dessen Motor hat. Der
-ist unter Windows und macOS verschieden, deshalb gibt es zwei Tabellen. Nichts davon ist bisher
-an echter Hardware ausprobiert – „erwartet“ heißt: Das ist der Weg, den das Lenkrad anbietet,
-und das Programm benutzt ihn.
+ist unter Windows und macOS verschieden, deshalb gibt es zwei Tabellen. „Läuft“ heißt: an
+echter Hardware ausprobiert. „Erwartet“ heißt: Das ist der Weg, den das Lenkrad anbietet, und
+das Programm benutzt ihn, aber ausprobiert hat es noch niemand.
 
 **Windows** – jedes Lenkrad, dessen Treiber Force Feedback anbietet, so wie es Rennspiele am PC
 nutzen (DirectInput):
@@ -110,11 +111,15 @@ nutzen (DirectInput):
 
 | Lenkrad | Wie | Stand |
 | --- | --- | --- |
-| Logitech RS50, G PRO | direkt über USB, ohne Treiber | erwartet |
+| Logitech RS50 | direkt über USB, ohne Treiber | läuft (ab 0.1.1, siehe unten) |
+| Logitech G PRO | direkt über USB, ohne Treiber | erwartet |
 | Logitech G29 (Schalter am Lenkrad auf PS3), G27, G25, Driving Force GT / Pro / EX | Treiber steckt im Programm (SDL) | erwartet |
 | Jedes Lenkrad, das einen Force-Feedback-Treiber für macOS mitbringt | dessen Treiber | erwartet |
 | Logitech G923 | – | noch nicht |
 | Thrustmaster, Fanatec | – | nicht möglich: Für sie gibt es keinen Force-Feedback-Treiber für macOS |
+
+Das Mac-Programm der Version 0.1.0 findet das RS50 nicht: macOS meldet es bei seinem
+Gamecontroller-Dienst an und hat es so vor dem Programm versteckt. Version 0.1.1 behebt das.
 
 Lenkräder, die das Programm sieht, aber nicht drehen kann, stehen mit dem Zusatz „ohne Force
 Feedback“ in der Liste. Lenkräder ohne Motor (zum Beispiel Thrustmaster T80, Hori Apex) kann
@@ -204,9 +209,11 @@ Es gibt keine Gewährleistung; du benutzt es auf eigene Gefahr.
   samt allen Fällen, in denen sie sich selbst abschalten muss (`Geisterhand --selftest`).
 - Das Programm unter macOS 27 (Apple Silicon) und, für Windows gebaut, in einer virtuellen
   Maschine mit Windows 11: Selbsttest, Fenster, Demo, Netzwerk.
+- An echter Hardware: Ein Logitech RS50 an einem Mac mit Apple Silicon folgt einer
+  Wiederholung von der PS5.
 
-Noch nicht geprüft: irgendein echtes Lenkrad, eine echte PlayStation mit diesem Programm, ein
-echter Windows-PC, ein Intel-Mac. Die Liste steht in [STATUS.md](STATUS.md).
+Noch nicht geprüft: andere Lenkräder, ein echter Windows-PC, ein Intel-Mac. Die Liste steht in
+[STATUS.md](STATUS.md).
 
 <p align="center"><img src="docs/images/windows.png" width="330" alt="Das Programm unter Windows 11, verbunden mit einer nachgebauten Konsole"></p>
 

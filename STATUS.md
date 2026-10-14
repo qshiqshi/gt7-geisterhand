@@ -1,12 +1,13 @@
 # Stand
 
-Version 0.1.0 · 14.10.2026 · Einstieg für die Weiterarbeit. Die Anleitung für Nutzer steht in
+Version 0.1.1 · 14.10.2026 · Einstieg für die Weiterarbeit. Die Anleitung für Nutzer steht in
 [README.de.md](README.de.md) / [README.md](README.md).
 
 Öffentlich seit dem 14.10.2026: <https://github.com/qshiqshi/gt7-geisterhand>, Release v0.1.0 mit
 `Geisterhand-mac.zip` und `Geisterhand-windows-x64.zip` (`./build.sh release` baut beide samt
 Prüfsummen nach `dist/release/`). Die Anleitung verweist auf `releases/latest/download/…` –
-die Dateinamen müssen bei jedem Release gleich bleiben.
+die Dateinamen müssen bei jedem Release gleich bleiben. Der Quelltext steht auf 0.1.1 (RS50 am
+Mac); das Release v0.1.1 ist noch nicht angelegt – nur auf Andreas' Befehl.
 
 ## Was es ist
 
@@ -22,20 +23,18 @@ USB-HID) und Dear ImGui, fest eingebunden – je eine Datei ohne Laufzeit.
 | Empfang, Suche, Wiedergabepuffer | `tools/fake_ps5.py` mit dem Mitschnitt „Deep Forest“ des Companion, stoßweise Zustellung; Zustand „Port belegt“ gesehen |
 | Regelung und Wächter | Selbsttest gegen nachgebildete Lenkräder (2,1 Nm Zahnrad bis 25 Nm Direktantrieb, beide Kraftrichtungen, 60–500 Hz, harte Manöver, Randstein-Rütteln, Datenlücke, blockiertes Rad, falsche Kraftrichtung) |
 | Mac-App (`dist/mac`, arm64 + x86_64) | macOS 27 auf Apple Silicon: Selbsttest, Demo, Netzweg, Bilder der Anleitung |
+| RS50 am Mac mit echter PS5 | Andreas, 14.10.2026: erkannt als „direkt“ (seit Commit 3fc904e), folgt der Wiederholung |
 | Windows-EXE (`dist/windows`, mingw-w64, statisch, 5,5 MB) | Windows 11 ARM in einer VM (x64-Emulation): Selbsttest, Fenster mit Demo, Netzweg gegen die nachgebaute Konsole auf dem Mac, Defender ohne Befund |
 
 ## Nicht geprüft – das sind die Gerätetests
 
-Bisher hat das Programm kein echtes Lenkrad gedreht und keine echte PlayStation gehört.
+An echter Hardware lief bisher nur das RS50 am Mac mit der PS5 (14.10.2026, Andreas: „Funktioniert
+am Mac“; die Mac-App aus Release v0.1.0 fand das Rad noch nicht, siehe Entscheidungen).
 
-1. **RS50 am Mac (direkter Weg):** Erscheint seit dem 14.10.2026 in der Liste mit „direkt“
-   (die Mac-App aus Release v0.1.0 sah es noch nicht, siehe Entscheidungen). Offen: Nimmt es
-   die Kraftpakete an (macOS schickt Ausgabeberichte ohne Treiber, G HUB läuft nebenher)?
-   Antippen beim Start, dann Mitlenken; fällt die Kraft bei Stopp, Taste und Abziehen weg?
-   Stimmt der Drehbereich?
-2. **Echte PlayStation:** Suche im Heimnetz, Paket „B“ während einer Wiederholung, Vorzeichen
-   des Lenkwinkels (aus dem Mitschnitt: positiv = links), Winkelbereich bei Fahrten mit
-   Lenkrad (der Mitschnitt stammt vom Controller und bleibt in ±180°).
+1. **RS50 am Mac, Einzelheiten:** Fällt die Kraft bei Stopp, Taste am Rad und Abziehen weg?
+   Stimmt der Drehbereich? Läuft es auch mit beendetem G HUB?
+2. **Echte PlayStation, Einzelheiten:** Winkelbereich bei Fahrten, die mit Lenkrad gefahren
+   wurden (der Mitschnitt des Companion stammt vom Controller und bleibt in ±180°).
 3. **Windows-PC mit Lenkrad:** DirectInput über G HUB, Thrustmaster- oder Fanatec-Treiber.
 4. Intel-Mac; Bau unter Windows mit MSVC; lokale-Netzwerk-Frage von macOS bei der App.
 

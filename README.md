@@ -11,9 +11,9 @@ ghost hand). Watch a leaderboard lap and see what the fastest drivers do with th
 
 *Deutsche Fassung: [README.de.md](README.de.md)*
 
-> **Early version – no real wheel has been turned by it yet.** So far the program has been
-> tested against simulated wheels and a stand-in console, on a Mac and in a Windows 11 virtual
-> machine. The first runs on real hardware are still to come; see
+> **Early version.** On real hardware it has so far run with one setup only: a Logitech RS50
+> on a Mac, following a replay from a PS5. Everything else has been tested against simulated
+> wheels and a stand-in console, on a Mac and in a Windows 11 virtual machine; see
 > [what has been tested](#what-has-been-tested). A steering wheel with a motor can hurt you:
 > read [Safety](#safety) first and start with a low force.
 
@@ -90,9 +90,9 @@ a made-up drive and a simulated wheel.
 ## Which wheels
 
 A wheel can only be turned by a program if the computer has a way to address its motor. That
-differs between Windows and macOS, so the two get a table each. Nothing in these tables has
-been tried on real hardware yet – "expected" means: this is the path the wheel offers, and
-the program uses it.
+differs between Windows and macOS, so the two get a table each. "Works" means: tried on
+real hardware. "Expected" means: this is the path the wheel offers, and the program uses it,
+but nobody has tried it yet.
 
 **Windows** – every wheel whose driver offers force feedback, the way PC racing games use it
 (DirectInput):
@@ -108,11 +108,15 @@ the program uses it.
 
 | Wheel | How | Status |
 | --- | --- | --- |
-| Logitech RS50, G PRO | directly over USB, no driver needed | expected |
+| Logitech RS50 | directly over USB, no driver needed | works (since 0.1.1, see below) |
+| Logitech G PRO | directly over USB, no driver needed | expected |
 | Logitech G29 (switch on the wheel set to PS3), G27, G25, Driving Force GT / Pro / EX | driver built into the program (SDL) | expected |
 | Any wheel that comes with a force feedback driver for macOS | its driver | expected |
 | Logitech G923 | – | not yet |
 | Thrustmaster, Fanatec | – | not possible: there is no macOS force feedback driver for them |
+
+The Mac program of version 0.1.0 does not find the RS50: macOS claims it for its game
+controller service and hid it from the program. Version 0.1.1 fixes that.
 
 Wheels the program can see but not turn are listed with the note "no force feedback". Wheels
 without a motor (for example Thrustmaster T80, Hori Apex) cannot be turned by anything.
@@ -197,9 +201,10 @@ There is no warranty; you use it at your own risk.
   in which it has to switch itself off (`Geisterhand --selftest`).
 - The program on macOS 27 (Apple silicon) and, as built for Windows, in a Windows 11 virtual
   machine: self-test, window, demo, network.
+- On real hardware: a Logitech RS50 on a Mac with Apple silicon follows a replay from a PS5.
 
-Not tested yet: any real steering wheel, a real PlayStation with this program, a real Windows
-PC, an Intel Mac. See [STATUS.md](STATUS.md) for the list.
+Not tested yet: other wheels, a real Windows PC, an Intel Mac. See [STATUS.md](STATUS.md) for
+the list.
 
 <p align="center"><img src="docs/images/windows.png" width="330" alt="The program on Windows 11, connected to a stand-in console"></p>
 
